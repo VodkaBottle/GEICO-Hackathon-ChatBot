@@ -1,0 +1,6 @@
+module.exports = {
+	PUSHER_APP_ID: '891890',
+	PUSHER_APP_KEY: '148d05b7d4512ec48c54',
+	PUSHER_APP_SECRET: 'a39ed9ed51add4ed37f7',
+	PUSHER_APP_CLUSTER: 'mt1'
+};
