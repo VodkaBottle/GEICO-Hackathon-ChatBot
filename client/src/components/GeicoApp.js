@@ -14,11 +14,12 @@ class GeicoApp extends React.Component {
 
 	constructor() {
 		super();
-		let movieStateEnum = {
+		let movieStateEnum = { howIsYourDay : "how",
 			favMovie : "favMovie", addingFavMovie : "addingFavMovie", readingFavoriteInput : "readingFavoriteInput", iterateMovies : "iterateMovies", 
 			recommendingMovie : "recommendingMovie", handingRecommendationResponse : "handingRecommendationResponse"
 		}
 		this.state = { 
+			currentRecommendation : [],
 			movieStateEnum : movieStateEnum, 
 			messages: [
 				{ id: uuid.v4(), senderId: 'AI', text: 'Welcome to Turtle Talk!' }, 
@@ -27,7 +28,7 @@ class GeicoApp extends React.Component {
 			lastMessage: '',
 			userMessage: '',
 			AITurn: false, 
-			movieState : movieStateEnum.favMovie, 
+			movieState : movieStateEnum.howIsYourDay, 
 			favoriteMovies : [], 
 			leastFavoriteMovies : [], 
 			moviesToConsiderRecommending : [],  
@@ -158,8 +159,51 @@ class GeicoApp extends React.Component {
 	// 	});
 	// };
 	handleAI = async () => { 
-		console.log(this.state.movieState);
-		if (this.state.movieState === this.state.movieStateEnum.favMovie) 
+		console.log(this.state.movieState); 
+		if (this.state.movieState === this.state.movieStateEnum.howIsYourDay) 
+		{ 
+				let Sentiment = require('sentiment');
+				let sentiment = new Sentiment();
+				let score = sentiment.analyze(this.state.lastMessage).score;
+				 
+				if (score >= -5 && score < -2) 
+				{ 
+					let message = { id: uuid.v4(), senderId: 'AI', text: `Sorry to hear that :( What is your favorite movie?`}  
+					let messages = this.state.messages 
+
+					messages.push(message);
+					this.setState({ 
+						movieState : this.state.movieStateEnum.favMovie, 
+						messages: messages, 
+						AITurn: false
+					})
+				} 
+				else if (score >= -2 && score < 2) 
+				{ 
+					let message = { id: uuid.v4(), senderId: 'AI', text: `Fun and Interactive! What is your favorite movie?`}  
+					let messages = this.state.messages
+					messages.push(message);
+
+					this.setState({ 
+						movieState : this.state.movieStateEnum.favMovie, 
+						messages: messages, 
+						AITurn: false
+					})
+				}  
+				else 
+				{ 
+					let message = { id: uuid.v4(), senderId: 'AI', text: `Amazing! What is your favorite movie?`} 
+					let messages = this.state.messages
+					messages.push(message);
+
+					this.setState({ 
+						movieState : this.state.movieStateEnum.favMovie, 
+						messages: messages, 
+						AITurn: false
+					})
+				}
+		}
+		else if (this.state.movieState === this.state.movieStateEnum.favMovie) 
 		{ 
 			var mv = new TheMovieDB();
 			let response = await mv.getMoviesByKeyword(this.state.lastMessage); 
@@ -238,26 +282,166 @@ class GeicoApp extends React.Component {
 			console.log(favoriteMovieId);
 			var mv = new TheMovieDB();
 			let response = await mv.getMovieInformation(favoriteMovieId); 
-			 
-			let movieInformation = response.data;  
-			let updatedGenres = this.state.genres
-
-			response.data.genres.forEach(data => { 
-				for (let i = 0; i < updatedGenres.length; i++) { 
-					
-				}
-			})
-		
+			
 			console.log(response);
-		} 
-		else if (this.state.movieState === this.state.movieStateEnum.iterateMovies) { //sort 
+			try { 
+				let movieInformation = response.data;  
+				let updatedGenres = this.state.genres
 
+				response.data.genres.forEach(data => { 
+					for (let i = 0; i < updatedGenres.length; i++) { 
+						let currentGenre = updatedGenres[i]; 
+
+						if (currentGenre.id == data.id) {
+							currentGenre.score += 1; 
+						}
+					}
+				})
+			
+				let keywordResponse = await mv.getKeywordsAssociatedWithMovie(favoriteMovieId); 
+				let keywords = keywordResponse.data.keywords; 
+
+				let moviesToRecommend = this.state.moviesToConsiderRecommending
+				keywords.forEach(async kw => { 
+					let keywordMovieResponse = await mv.getMoviesByKeyword(kw); 
+					let keywordMovies = keywordMovieResponse.data.results; 
+					moviesToRecommend = moviesToRecommend.concat(keywordMovies)
+				})
+
+
+				let recommendedMovies = await mv.getMovieRecommendations(favoriteMovieId, 1);   
+				let recommendedMoviesData = recommendedMovies.data.results; 
+
+				moviesToRecommend = moviesToRecommend.concat(recommendedMoviesData);
+
+				console.log(recommendedMovies); 
+
+				this.setState({ 
+					moviesToConsiderRecommending : moviesToRecommend, 
+					movieState : this.state.movieStateEnum.iterateMovies, 
+					genres: updatedGenres
+				})
+			}
+			catch (error) 
+			{ 
+				this.setState({ 
+					movieState : this.state.movieStateEnum.iterateMovies
+				})
+			}
+			
+		}
+		else if (this.state.movieState === this.state.movieStateEnum.iterateMovies) { //sort 
+			if (this.state.moviesToConsiderRecommending.length > 0) { 
+			
+				let movies = this.state.moviesToConsiderRecommending; 
+
+				movies.sort(async (a, b) => { 
+					try { 
+						
+						var mv = new TheMovieDB();
+						let response1 = await mv.getMovieInformation(a);  
+
+						let response2 = await mv.getMovieInformation(b); 
+
+						let movieOneGenre = response1.data.genres; 
+						let movieTwoGenre = response2.data.genres; 
+
+						let movieOneScore = 10; 
+						let movieTwoScore = 10; 
+
+						let updatedGenres = this.state.genres
+
+						movieOneGenre.forEach(data => { 
+							for (let i = 0; i < updatedGenres.length; i++) { 
+								let currentGenre = updatedGenres[i].score; 
+
+								movieOneScore += currentGenre - 10;
+							}
+						}) 
+
+						movieTwoGenre.forEach(data => { 
+							for (let i = 0; i < updatedGenres.length; i++) { 
+								let currentGenre = updatedGenres[i].score; 
+
+								movieTwoScore += currentGenre - 10;
+							}
+						})  
+
+						return movieTwoScore - movieOneScore; //might be flipped 
+					} 
+					catch (error) 
+					{ 
+						return a - b; 
+					}
+				}); 
+
+				this.setState({ 
+					moviesToConsiderRecommending : movies, 
+					movieState : this.state.movieStateEnum.recommendingMovie
+				})
+			} 
+			else  
+			{ 
+				alert("ficl")
+				// popular / highest rated / newest
+			}
+		
 		} 
 		else if (this.state.movieState === this.state.movieStateEnum.recommendingMovie) { 
+			if (this.state.moviesToConsiderRecommending.length > 0) 
+			{ 
+				let movieToRecommend = this.state.moviesToConsiderRecommending.shift(); 	
+				console.log(movieToRecommend); 
 
+				let message = { id: uuid.v4(), senderId: 'AI', text: `I am recommending you the movie ${movieToRecommend.title}. Do you like this recommendation?`}  
+				let messages = this.state.messages 
+
+				messages.push(message); 
+
+				this.setState({ 
+					messages : messages, 
+					movieState : this.state.movieStateEnum.handingRecommendationResponse,  
+					AITurn : false
+				})
+			} 
+			else 
+			{ 
+				// popular / highest rated / newest
+				alert("fuck");
+			}
 		} 
 		else if (this.state.movieState === this.state.movieStateEnum.handingRecommendationResponse) { 
+			if (this.state.lastMessage.toLowerCase().includes("ye") || this.state.lastMessage.toLowerCase().includes("yu")) { 
+				let message = { id: uuid.v4(), senderId: 'AI', text: `I am glad you enjoyed the recommendation! Let me show you another similar!`}   
+				let messages = this.state.messages;  
+				let likedMovies = this.state.favoriteMovies; 
 
+				likedMovies.push(this.state.currentRecommendation);  
+				messages.push(message); 
+
+				this.setState({ 
+					favoriteMovies : likedMovies, 
+					messages : messages, 
+					movieState : this.state.movieStateEnum.addingFavMovie
+				})
+			} 
+			else 
+			{ 
+				let message = { id: uuid.v4(), senderId: 'AI', text: `I am sorry you didn't like the recommendation. Let me recommend you another!`}  
+				let messages = this.state.messages; 
+				messages.push(message); 
+
+				let dislikedMovies = this.state.leastFavoriteMovies;
+
+				dislikedMovies.push(this.state.currentRecommendation);  
+				messages.push(message);  
+
+				this.setState({ 
+					leastFavoriteMovies : dislikedMovies, 
+					messages : messages, 
+					movieState : this.state.iterateMovies
+				})
+			}
 		} 
 		else { 
 			alert("Fuck"); //change this eventually 
@@ -277,7 +461,7 @@ class GeicoApp extends React.Component {
 						// {console.log(message.senderId)}
 						// className=''
 					>
-						<div>{message.senderId}</div>
+						{/* <div>{message.senderId}</div> */}
 						<div>{message.text}</div>
 						<br />
 					</div>

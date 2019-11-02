@@ -36,7 +36,7 @@ class TheMovieDB {
 
     getMovieRecommendations = async (id, pageNumber) => { 
         try { 
-            let response = await Axios.get(`https://api.themoviedb.org/3/movie/{${id}}/recommendations?api_key=ecd59a5f85cfccbda40237e12c056bc8&language=en-US&page=${pageNumber}`);  
+            let response = await Axios.get(`https://api.themoviedb.org/3/movie/${id}/recommendations?api_key=ecd59a5f85cfccbda40237e12c056bc8&language=en-US&page=${pageNumber}`);  
             return response;
         }
         catch (error) { 
@@ -47,7 +47,7 @@ class TheMovieDB {
 
     getKeywordsAssociatedWithMovie = async (id) => { 
         try { 
-            let response = await Axios.get(`https://api.themoviedb.org/3/movie/{${id}}/keywords?api_key=ecd59a5f85cfccbda40237e12c056bc8`) 
+            let response = await Axios.get(`https://api.themoviedb.org/3/movie/${id}/keywords?api_key=ecd59a5f85cfccbda40237e12c056bc8`) 
             return response;
         } 
         catch (error) { 
@@ -71,6 +71,8 @@ class TheMovieDB {
     getMovieInformation = async (movieID) => { 
         try { 
             let response = await Axios.get(`https://api.themoviedb.org/3/movie/${movieID}?api_key=ecd59a5f85cfccbda40237e12c056bc8&language=en-US`) 
+            console.log(movieID);
+            
             return response;
         } 
         catch (error) { 

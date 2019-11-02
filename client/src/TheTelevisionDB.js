@@ -20,7 +20,7 @@ class TelevisionDB {
     getShowRecommendations = (tvID, pageNumber) => { 
         try { 
             let response = await Axios.get(`
-            https://api.themoviedb.org/3/tv/{${tvID}}/recommendations?api_key=ecd59a5f85cfccbda40237e12c056bc8&language=en-US&page=${pageNumber}`)
+            https://api.themoviedb.org/3/tv/${tvID}/recommendations?api_key=ecd59a5f85cfccbda40237e12c056bc8&language=en-US&page=${pageNumber}`)
         } 
         catch (error) { 
             console.log(error);
@@ -61,7 +61,7 @@ class TelevisionDB {
     getKeywordsAssociatedWithShow = (tvID) => { 
         try { 
             let response = await Axios.get(`
-            https://api.themoviedb.org/3/tv/{${tvID}}/keywords?api_key=ecd59a5f85cfccbda40237e12c056bc8
+            https://api.themoviedb.org/3/tv/${tvID}/keywords?api_key=ecd59a5f85cfccbda40237e12c056bc8
            `)
         } 
         catch (error) { 
