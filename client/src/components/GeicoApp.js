@@ -13,15 +13,30 @@ import Pusher from 'pusher-js';
 import uuid from 'uuid';
 
 class GeicoApp extends React.Component {
+
+	/* 
+	 * 
+	 */ 
+
+	movieState = () => {
+		return {
+			favMovie : "favMovie", addingFavMovie : "addingFavMovie", iterateMovies : "iterateMovies", 
+			recommendingMovie : "recommendingMovie", handingRecommendationResponse : "handingRecommendationResponse"
+		}
+	}
+
+
 	constructor() {
 		super();
 		this.state = {
 			messages: [
-				{ id: uuid.v4(), senderId: 'AI', text: 'Welcome to Turtle Talk' }
-			],
+				{ id: uuid.v4(), senderId: 'AI', text: 'Welcome to Turtle Talk!' }, 
+				{ id: uuid.v4(), senderId: 'AI', text: "How are you feeling today?"}
+			],	
 			lastMessage: '',
 			userMessage: '',
-			AITurn: false
+			AITurn: false, 
+			movieState : this.movieState.favMovie
 		};
 	}
 
@@ -77,7 +92,12 @@ class GeicoApp extends React.Component {
 			})
 		});
 
-		this.setState({ userMessage: '' });
+		this.setState({ 
+			lastMessage: this.state.userMessage, 
+			userMessage: "", 
+			AITurn : true 
+		 }); 
+		 
 	};
 
 	// sendMessage = text => {
@@ -91,8 +111,38 @@ class GeicoApp extends React.Component {
 	// 		AITurn: true
 	// 	});
 	// };
+	handleAI = () => { 
+		if (this.state.movieState == this.movieState.favMovie) 
+		{ 
+			fetch('http://localhost:5000/favorite-movies', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				message: this.state.lastMessage
+			})
+			});
+		} 
+		else if (this.state.movieState == this.movieState.addingFavMovie) { 
 
-	render() {
+		} 
+		else if (this.state.movieState == this.movieState.iterateMovies) { //sort 
+
+		} 
+		else if (this.state.movieState == this.movieState.recommendingMovie) { 
+
+		} 
+		else if (this.state.movieState == this.movieState.handingRecommendationResponse) { 
+
+		} 
+		else { 
+			alert("Fuck"); //change this eventually 
+		}
+	}
+
+	render() { 	 
+		if (this.state.AITurn) { 
+			this.handleAI();
+		}
 		const convo = () =>
 			this.state.messages.map(message => {
 				return (
