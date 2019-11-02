@@ -1,5 +1,5 @@
 var express = require('express');
-const movieFuncs = require('./TheMovieDB');
+const movieFuncs = require('../../client/src/TheMovieDB');
 var router = express.Router();
 
 /* GET home page. */
@@ -15,7 +15,7 @@ router.post('/', (req, res, next) => {
 	res.end();
 });
  
-router.post('/favorite-movies', (req, res, next) => {
+router.get('/favorite-movies', (req, res, next) => {
 	console.log("Hello");
 	const {message} = req.body;
 	let response =  movieFuncs.getMoviesByKeyword(message)

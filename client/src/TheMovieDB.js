@@ -1,5 +1,6 @@
 var Axios = require('axios');
 
+class TheMovieDB { 
     getTopRatedMovies = async (pageNumber) => { 
         try { 
             let response = await Axios.get(`https://api.themoviedb.org/3/movie/top_rated?api_key=ecd59a5f85cfccbda40237e12c056bc8&language=en-US&page=${pageNumber}`);  
@@ -56,26 +57,20 @@ var Axios = require('axios');
     }  
 
     getMoviesByKeyword = async (keyword) => { 
-        // try { 
-        //     let response = await Axios.get(`https://api.themoviedb.org/3/search/keyword?api_key=ecd59a5f85cfccbda40237e12c056bc8&query=${keyword}`) 
-        //     return response;
-        // } 
-        // catch (error) { 
-        //     console.log(error); 
-        //     return null;
-        // }
-        let resp = await Axios.get(`https://api.themoviedb.org/3/search/keyword?api_key=ecd59a5f85cfccbda40237e12c056bc8&query=${keyword}`)
-        .then(response => {
-            return response
-        })
-        .catch(e => {
-            console.error(e)
-        })
+         try { 
+            let response = await Axios.get(`https://api.themoviedb.org/3/search/keyword?api_key=ecd59a5f85cfccbda40237e12c056bc8&query=${keyword}`) 
+            return response;
+         } 
+         catch (error) { 
+             console.log(error); 
+             return null;
+         }
+    
     } 
 
     getMovieInformation = async (movieID) => { 
         try { 
-            let response = await Axios.get(`https://api.themoviedb.org/3/movie/{${movieID}}?api_key=ecd59a5f85cfccbda40237e12c056bc8&language=en-US`) 
+            let response = await Axios.get(`https://api.themoviedb.org/3/movie/${movieID}?api_key=ecd59a5f85cfccbda40237e12c056bc8&language=en-US`) 
             return response;
         } 
         catch (error) { 
@@ -83,13 +78,15 @@ var Axios = require('axios');
             return null;
         }
     }
-
-module.exports = {
-    getTopRatedMovies,
-    getPopularMovies,
-    getMoviesNowPlaying,
-    getMovieRecommendations,
-    getKeywordsAssociatedWithMovie,
-    getMoviesByKeyword,
-    getMovieInformation
 }
+export default TheMovieDB;
+
+// module.exports = {
+//     getTopRatedMovies,
+//     getPopularMovies,
+//     getMoviesNowPlaying,
+//     getMovieRecommendations,
+//     getKeywordsAssociatedWithMovie,
+//     getMoviesByKeyword,
+//     getMovieInformation
+// }

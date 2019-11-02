@@ -10,7 +10,7 @@ class TelevisionDB {
     getShowInformation = (tvID) => { 
         try { 
             let response = await Axios.get(`
-            https://api.themoviedb.org/3/tv/{${tvID}}?api_key=ecd59a5f85cfccbda40237e12c056bc8&language=en-US`)
+            https://api.themoviedb.org/3/tv/${tvID}?api_key=ecd59a5f85cfccbda40237e12c056bc8&language=en-US`)
         } 
         catch (error) { 
             console.log(error);

@@ -1,34 +1,25 @@
-/** Replace these with your own API keys, username and roomId from Chatkit  */
 
-/*
-const testToken = "https://us1.pusherplatform.io/services/chatkit_token_provider/v1/dfaf1e22-2d33-45c9-b4f8-31f634621d24/token"
-const instanceLocator = "v1:us1:dfaf1e22-2d33-45c9-b4f8-31f634621d24"
-const roomId = 9806194
-const username = 'perborgen'
-*/
 import React from 'react';
 import './geicoapp.css';
 import Axios from 'axios';
 import Pusher from 'pusher-js';
 import uuid from 'uuid';
-
+import TheMovieDB from '../TheMovieDB';
+import { runInThisContext } from 'vm';
 class GeicoApp extends React.Component {
 
 	/* 
 	 * 
 	 */ 
 
-	movieState = () => {
-		return {
-			favMovie : "favMovie", addingFavMovie : "addingFavMovie", iterateMovies : "iterateMovies", 
-			recommendingMovie : "recommendingMovie", handingRecommendationResponse : "handingRecommendationResponse"
-		}
-	}
-
-
 	constructor() {
 		super();
-		this.state = {
+		let movieStateEnum = {
+			favMovie : "favMovie", addingFavMovie : "addingFavMovie", readingFavoriteInput : "readingFavoriteInput", iterateMovies : "iterateMovies", 
+			recommendingMovie : "recommendingMovie", handingRecommendationResponse : "handingRecommendationResponse"
+		}
+		this.state = { 
+			movieStateEnum : movieStateEnum, 
 			messages: [
 				{ id: uuid.v4(), senderId: 'AI', text: 'Welcome to Turtle Talk!' }, 
 				{ id: uuid.v4(), senderId: 'AI', text: "How are you feeling today?"}
@@ -36,35 +27,90 @@ class GeicoApp extends React.Component {
 			lastMessage: '',
 			userMessage: '',
 			AITurn: false, 
-			movieState : this.movieState.favMovie
+			movieState : movieStateEnum.favMovie, 
+			favoriteMovies : [], 
+			leastFavoriteMovies : [], 
+			moviesToConsiderRecommending : [],  
+			temporaryFavoriteMovies : [],
+			genres : [ {
+				"id": 28,
+				score: 10
+			  },
+			  {
+				"id": 12,
+				score: 10
+			  },
+			  {
+				"id": 16,
+				score: 10
+			  },
+			  {
+				"id": 35,
+				score: 10
+			  },
+			  {
+				"id": 80,
+				score: 10
+			  },
+			  {
+				"id": 99,
+				score: 10
+			  },
+			  {
+				"id": 18,
+				score: 10
+			  },
+			  {
+				"id": 10751,
+				score: 10
+			  },
+			  {
+				"id": 14,
+				score: 10
+			  },
+			  {
+				"id": 36,
+				score: 10
+			  },
+			  {
+				"id": 27,
+				score: 10
+			  },
+			  {
+				"id": 10402,
+				score: 10
+			  },
+			  {
+				"id": 9648,
+				score: 10
+			  },
+			  {
+				"id": 10749,
+				score: 10
+			  },
+			  {
+				"id": 878,
+				score: 10
+			  },
+			  {
+				"id": 10770,
+				score: 10
+			  },
+			  {
+				"id": 53,
+				score: 10
+			  },
+			  {
+				"id": 10752,
+				score: 10
+			  },
+			  {
+				"id": 37,
+				score: 10
+			  }]
 		};
 	}
 
-	componentDidMount() {
-		const pusher = new Pusher('148d05b7d4512ec48c54', {
-			cluster: 'mt1',
-			encrypted: true
-		});
-
-		const channel = pusher.subscribe('chat');
-		channel.bind('chat-response', data => {
-			const msg = {
-				text: data.message,
-				user: 'AI'
-			};
-
-			this.setState({
-				messages: [
-					...this.state.messages,
-					{
-						id: uuid.v4(),
-						senderId: msg.user,
-						text: msg.text
-					}
-				]
-			});
-		});
-	}
 
 	handleChange = e => {
 		this.setState({ userMessage: e.target.value });
@@ -111,27 +157,106 @@ class GeicoApp extends React.Component {
 	// 		AITurn: true
 	// 	});
 	// };
-	handleAI = () => { 
-		if (this.state.movieState == this.movieState.favMovie) 
+	handleAI = async () => { 
+		console.log(this.state.movieState);
+		if (this.state.movieState === this.state.movieStateEnum.favMovie) 
 		{ 
-			fetch('http://localhost:5000/favorite-movies', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				message: this.state.lastMessage
+			var mv = new TheMovieDB();
+			let response = await mv.getMoviesByKeyword(this.state.lastMessage); 
+			let favoriteMovie = response.data.results  
+
+			if (favoriteMovie.length === 1) 
+			{ 
+				console.log(favoriteMovie[0].id);
+				var newFavoriteMovies = this.state.favoriteMovies; 
+				newFavoriteMovies.push(favoriteMovie[0].id)
+
+				this.setState({ 
+					favoriteMovies : newFavoriteMovies, 
+					movieState : this.state.movieStateEnum.addingFavMovie
+				})
+			} 
+			else if (favoriteMovie.length > 1)  
+			{ 
+				let newMessages = [] 
+				console.log(favoriteMovie);
+				favoriteMovie.forEach((element, index) => {
+					let message = { id: uuid.v4(), senderId: 'AI', text: `#${index}: ${element.name}` } 
+					newMessages.push(message);
+				}); 
+
+				let message = {id: uuid.v4(), senderId: 'AI', text: `Enter the number of the Movie that most matches your favorite, or enter -1 if you don't see the title of your favorite movie!` } 
+				newMessages.push(message); 
+				let messages = this.state.messages.concat(newMessages); 
+				console.log(messages);
+				this.setState({ 
+					messages : messages, 
+					movieState : this.state.movieStateEnum.readingFavoriteInput, 
+					temporaryFavoriteMovies : favoriteMovie, 
+					AITurn : false
+				});
+			} 
+			else 
+			{ 
+				console.log("Whoops")
+			}
+		}  
+		else if (this.state.movieState === this.state.movieStateEnum.readingFavoriteInput) { 
+			if (this.state.lastMessage === "-1") 
+			{ 
+
+			} 
+			else 
+			{ 
+				try { 
+					let index = parseInt(this.state.lastMessage); 
+					let favoriteMovie = this.state.temporaryFavoriteMovies[index]; 
+					
+					console.log(favoriteMovie); 
+
+					let movies = this.state.favoriteMovies 
+					movies.push(favoriteMovie.id);
+					this.setState({ 
+						favoriteMovies : movies, 
+						temporaryFavoriteMovies : [], 
+						movieState : this.state.movieStateEnum.addingFavMovie	
+					})
+				} 
+				catch { 
+					let message = {id: uuid.v4(), senderId: 'AI', text: `Sorry we were unable to find your favorite movie!` } 
+					console.log("sheesh")
+					/* 
+						Add this message to the messages list in state 
+						Change the state to the popular / highest rated / newest movies flow 
+					*/
+				}
+			}
+		}
+		else if (this.state.movieState === this.state.movieStateEnum.addingFavMovie) { 
+			let favoriteMovieId = this.state.favoriteMovies[this.state.favoriteMovies.length - 1]
+			
+			console.log(favoriteMovieId);
+			var mv = new TheMovieDB();
+			let response = await mv.getMovieInformation(favoriteMovieId); 
+			 
+			let movieInformation = response.data;  
+			let updatedGenres = this.state.genres
+
+			response.data.genres.forEach(data => { 
+				for (let i = 0; i < updatedGenres.length; i++) { 
+					
+				}
 			})
-			});
+		
+			console.log(response);
 		} 
-		else if (this.state.movieState == this.movieState.addingFavMovie) { 
+		else if (this.state.movieState === this.state.movieStateEnum.iterateMovies) { //sort 
 
 		} 
-		else if (this.state.movieState == this.movieState.iterateMovies) { //sort 
+		else if (this.state.movieState === this.state.movieStateEnum.recommendingMovie) { 
 
 		} 
-		else if (this.state.movieState == this.movieState.recommendingMovie) { 
-
-		} 
-		else if (this.state.movieState == this.movieState.handingRecommendationResponse) { 
+		else if (this.state.movieState === this.state.movieStateEnum.handingRecommendationResponse) { 
 
 		} 
 		else { 
