@@ -1,6 +1,7 @@
 var express = require('express');
 const movieFuncs = require('../../client/src/TheMovieDB');
 var router = express.Router();
+const processMessage = require('../process-message');
 
 /* GET home page. */
 
@@ -11,7 +12,8 @@ router.get('/', function(req, res, next) {
 
 router.post('/', (req, res, next) => {
 	const message = req.body;
-	console.log(message);
+	// console.log(message);
+	processMessage(message);
 	res.end();
 });
  

@@ -1,0 +1,14 @@
+module.exports = {
+	type: 'service_account',
+	project_id: 'turtletalk-wvtuce',
+	private_key_id: '2e9a0253dad529bf323f93a1f144efac7acb4c95',
+	private_key:
+		'-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCz/l77g2r4HbUy\nN8oFf/6tH5KO5omyeUs21wIvrRh5AS6AkqtMdvO4dZAXbtXB0hQHkxZzo6vge7+p\nieAq8szb/GeUv8McS4PT6ylvilSmiuQiQ7XnPv+urxIZH1JpgehKU7JdHeu1iXIe\nXP5R3kOuTwuINY+DRqoV8l56dKK09U6Xqkice7iggc8zCf/3T575vLld7PReoO9D\nodvtpKKqOZ/sPNfiXWWyuy7rSZCj656f2utrnJbDXMlBqWc8XpxiFB+9FEWdrWKu\nd4Ii1Xm18ecKqorPLCL2aqGjRqb6xbo9AZXDZ+mrUn3g1Uc77fGdQ9CYuVsCGrk8\ny2TkIxZXAgMBAAECggEABIWjAEGkedhROZJCPpIhJVtSNMng8r1uYNHVCbqZD00y\nzGMi75hbdipp9NTBhQ2QmEIfQcd+ZXTmc0119s5DzFESjx+kOL1C8huJ3nYEu2xo\n392An+8qwEpAs6XgTatIWTmyFPnP9q8d0Vp3vznMzH/K4+Comt03H7cHnZ75iX9H\nUMckjJf8UoTcQQFMUSrYg1mhdgZq6nTItYSNnAQrBKexpC/tZ2QEvoShT7sRNOnY\nnvPbEm3MGAHUhLE7C3R+TJmuVarw+xTYGkC/m4IWQrbLyBXLGhXOhDxicx/NFceX\nZrspooLb9HTcMLbNr6AsYmY/sy3K8Dn3MZFtjfYxmQKBgQD6VpGZDCL0s7zvGuIv\ngn5GXh8Mql1cl2xLLkJGLjAvQ4PCYTTzk6Hjj/Bai7Ygb7Oq28kQyuWBlEjOr0Tt\nHGethahYbTKrEtyp/d2YD2d8ZgMDhMql9njxGBduWYETPJC7JJYGSms79e4aqrgi\n1bkGSXXZHVozZTS6dCX8VfjqXwKBgQC4EIPW3SYrUbnLM/qE5dPORtsyZCD6I8OA\nqiDUFcgYKUMm3vrlHP2RIlhr/UC7YdgXtp/N/VMaz8eiLV5gXSP7rHVF5bjsFrKv\nWItSIXhxVQ4kJNezu7eITzhF8c7fmvaK5pQVjFhq9T74sfSnovGsCP9RDOdCqeVi\nwMaBwq3HCQKBgDa65moHdTz6brv3rKumY+UOfstOE8tCb7KgEm01e+NZZ1z/04vN\nIv+VYH7rPI4q3aTlGDhLo5GI0cIeH3uXUjNlnUB33zP3k7a2gdPUylMwGkiSp5tR\nH2/WTIkbmFSUUTAY95O4gWlCgyPhXxB+mUz+kn09JZNG9RgufH+GbD0RAoGAXwtg\nGKYPXJUR3ETV2qQWj9B0xXuAr8mh3SF8XCd3MEq2Oy8u3PnwUW4rvG+Ean3mqLAL\nqsFhlVmvWyYUMqxFtWJjGBm8OGSsFfEh1+IioFrsN2uy2kNXTRKjGzL2wO3y2tyf\noNTcnzZOMvspOxrfshbfR8ni7MBwC2NB3aVaOIkCgYEAzA7EA30erpu5BQoIVNzi\nH51NnfqaN/ykEiNAXWDUItRMJxFx7/0CcS8OddoVhIzErFFPBFx966+TRCwg78u6\nwgFPt+GnaZf/4dyEDez8vcuUdGVtx+4wkYR28E1RVpt6YM9WEiOzaxd7EXEdBGkY\nOoZIxYr/77AXtGdtxiHw+pc=\n-----END PRIVATE KEY-----\n',
+	client_email: 'dialogflow-mvrowd@turtletalk-wvtuce.iam.gserviceaccount.com',
+	client_id: '113814245380621790460',
+	auth_uri: 'https://accounts.google.com/o/oauth2/auth',
+	token_uri: 'https://oauth2.googleapis.com/token',
+	auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
+	client_x509_cert_url:
+		'https://www.googleapis.com/robot/v1/metadata/x509/dialogflow-mvrowd%40turtletalk-wvtuce.iam.gserviceaccount.com'
+};
