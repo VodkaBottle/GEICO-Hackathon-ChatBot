@@ -14,11 +14,11 @@ class GeicoApp extends React.Component {
 
 	constructor() {
 		super();
-		let movieStateEnum = { howIsYourDay : "how",
+		let movieStateEnum = { howIsYourDay : "how", popular : "popular",
 			favMovie : "favMovie", addingFavMovie : "addingFavMovie", readingFavoriteInput : "readingFavoriteInput", iterateMovies : "iterateMovies", 
 			recommendingMovie : "recommendingMovie", handingRecommendationResponse : "handingRecommendationResponse"
 		}
-		this.state = { 
+		this.state = {  
 			currentRecommendation : [],
 			movieStateEnum : movieStateEnum, 
 			messages: [
@@ -203,6 +203,13 @@ class GeicoApp extends React.Component {
 					})
 				}
 		}
+		else if (this.state.moviesState === this.state.movieStateEnum.popular) 
+		{ 
+			var mv = new TheMovieDB(); 
+			let response = await mv.getPopularMovies(1); 
+
+			console.log(response);
+		}
 		else if (this.state.movieState === this.state.movieStateEnum.favMovie) 
 		{ 
 			var mv = new TheMovieDB();
@@ -242,13 +249,31 @@ class GeicoApp extends React.Component {
 			} 
 			else 
 			{ 
-				console.log("Whoops")
+				let message = {id: uuid.v4(), senderId: 'AI', text: `We were unable to find you favorite movie, but try this fun recommendation from us!` }  
+				let messages = this.state.messages; 
+				messages.push(message); 
+
+				this.setState({ 
+					movieState : this.state.movieStateEnum.popular, 
+					messages : messages,
+					AITurn : true
+
+				})
 			}
 		}  
 		else if (this.state.movieState === this.state.movieStateEnum.readingFavoriteInput) { 
 			if (this.state.lastMessage === "-1") 
 			{ 
+				let message = {id: uuid.v4(), senderId: 'AI', text: `We're sorry none of these matched your favorite, but try this fun recommendation from us!` }  
+				let messages = this.state.messages; 
+				messages.push(message); 
 
+				this.setState({ 
+					movieState : this.state.movieStateEnum.popular, 
+					messages : messages,
+					AITurn : true
+
+				})
 			} 
 			else 
 			{ 
@@ -268,11 +293,13 @@ class GeicoApp extends React.Component {
 				} 
 				catch { 
 					let message = {id: uuid.v4(), senderId: 'AI', text: `Sorry we were unable to find your favorite movie!` } 
-					console.log("sheesh")
-					/* 
-						Add this message to the messages list in state 
-						Change the state to the popular / highest rated / newest movies flow 
-					*/
+					let messages = this.state.messages 
+
+					messages.push(message)
+					this.setState({ 
+						messages : messages, 
+						moviesState : this.state.movieStateEnum.popular
+					})
 				}
 			}
 		}
@@ -382,8 +409,9 @@ class GeicoApp extends React.Component {
 			} 
 			else  
 			{ 
-				alert("ficl")
-				// popular / highest rated / newest
+				this.setState({
+					movieState : this.state.movieStateEnum.popular
+				})
 			}
 		
 		} 
@@ -401,7 +429,8 @@ class GeicoApp extends React.Component {
 				this.setState({ 
 					messages : messages, 
 					movieState : this.state.movieStateEnum.handingRecommendationResponse,  
-					AITurn : false
+					AITurn : false, 
+					currentRecommendation : []
 				})
 			} 
 			else 
