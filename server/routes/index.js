@@ -1,4 +1,5 @@
 var express = require('express');
+const movieFuncs = require('../../client/src/TheMovieDB');
 var router = express.Router();
 const processMessage = require('../process-message');
 
@@ -15,5 +16,13 @@ router.post('/', (req, res, next) => {
 	processMessage(message);
 	res.end();
 });
+ 
+router.get('/favorite-movies', (req, res, next) => {
+	console.log("Hello");
+	const {message} = req.body;
+	let response =  movieFuncs.getMoviesByKeyword(message)
+	.then(resp => res.json(resp))
+});
+
 
 module.exports = router;
